@@ -10,10 +10,12 @@ class ImageEditor:
 	height = 347
 	picturedata = np.array([])
 	brightness = 1
+	contrast = 0
 
 	def show_image(self):
-		tmp = Image.fromarray(np.clip((self.picturedata*self.brightness),0,255).astype(dtype=np.uint8))
-		print((self.picturedata + self.brightness).astype(dtype=np.uint8))
+		factor = (259.0 * (self.contrast + 255.0)) / (255.0 * (259.0 - self.contrast))
+		tmp = Image.fromarray(np.clip((factor *(self.picturedata-128.0)+128)*self.brightness,0,255).astype(dtype=np.uint8))
+		self.img = ImageTk.PhotoImage(tmp)
 		self.canvas.create_image(self.width/2,self.height/2, anchor = CENTER, image = self.img)
 
 	def negative (self):
@@ -88,10 +90,18 @@ class ImageEditor:
 			self.status['text'] = "No more brigthness can be substracted!"
 
 	def contrastUp (self):
-		return
+		if self.contrast<255:
+			self.contrast+=5
+			self.show_image()
+		else:
+			self.status['text'] = "No more contrast can be added!"
 
 	def contrastDown (self):
-		return
+		if self.contrast>-255:
+			self.contrast-=5
+			self.show_image()
+		else:
+			self.status['text'] = "No more contrast can be substracted!"
 
 	def loadImage(self):
 		fname = filedialog.askopenfilename()
