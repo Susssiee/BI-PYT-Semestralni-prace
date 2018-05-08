@@ -42,10 +42,22 @@ class ImageEditor:
 			self.status['text'] = "No file loaded!"
 
 	def flipX (self):
-		return
+		if self.picture:
+			data = np.asarray(self.picture,dtype=np.uint8)
+			flipx = np.flip(data,0)
+			self.picture = Image.fromarray(flipx) 
+			self.show_image()
+		else:
+			self.status['text'] = "No file loaded!"
 
 	def flipY (self):
-		return
+		if self.picture:
+			data = np.asarray(self.picture,dtype=np.uint8)
+			flipy = np.flip(data,1)
+			self.picture = Image.fromarray(flipy) 
+			self.show_image()
+		else:
+			self.status['text'] = "No file loaded!"
 
 	def makeGray (self):
 		return
