@@ -60,7 +60,16 @@ class ImageEditor:
 			self.status['text'] = "No file loaded!"
 
 	def makeGray (self):
-		return
+		if self.picture:
+			data = np.asarray(self.picture,dtype=np.uint8)
+			if data.ndim==3:
+				gray = (data * np.array([[[0.299, 0.587, 0.114]]])).sum(axis=2).astype(dtype=np.uint8)
+				self.picture = Image.fromarray(gray,"L") 
+				self.show_image()
+			else:
+				self.status['text'] = "Image is already in gray colors!"
+		else:
+			self.status['text'] = "No file loaded!"
 
 	def brightenUp (self):
 		return
