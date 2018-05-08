@@ -18,16 +18,28 @@ class ImageEditor:
 		if self.picture:
 			data = np.asarray(self.picture,dtype=np.uint8)
 			negativ = 255 - data
-			self.picture = Image.fromarray(negativ,'RGB') 
+			self.picture = Image.fromarray(negativ) 
 			self.show_image()
 		else:
 			self.status['text'] = "No file loaded!"
 
 	def rotateLeft (self):
-		return
+		if self.picture:
+			data = np.asarray(self.picture,dtype=np.uint8)
+			rotLeft = np.rot90(data)
+			self.picture = Image.fromarray(rotLeft) 
+			self.show_image()
+		else:
+			self.status['text'] = "No file loaded!"
 
 	def rotateRight (self):
-		return
+		if self.picture:
+			data = np.asarray(self.picture,dtype=np.uint8)
+			rotRight = np.rot90(data, axes=(1,0))
+			self.picture = Image.fromarray(rotRight) 
+			self.show_image()
+		else:
+			self.status['text'] = "No file loaded!"
 
 	def flipX (self):
 		return
