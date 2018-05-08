@@ -15,7 +15,13 @@ class ImageEditor:
 		self.canvas.create_image(self.width/2,self.height/2, anchor = CENTER, image = self.img)
 
 	def negative (self):
-		return
+		if self.picture:
+			data = np.asarray(self.picture,dtype=np.uint8)
+			negativ = 255 - data
+			self.picture = Image.fromarray(negativ,'RGB') 
+			self.show_image()
+		else:
+			self.status['text'] = "No file loaded!"
 
 	def rotateLeft (self):
 		return
@@ -53,6 +59,7 @@ class ImageEditor:
 				self.imageLoaded =1
 			except:
 				self.status['text'] = "Unsupported file format"
+				self.imageLoaded = 0
 
 	def sizeEvent (self, event):
 		self.status['text'] = str(event.width) +"x"+str(event.height)
