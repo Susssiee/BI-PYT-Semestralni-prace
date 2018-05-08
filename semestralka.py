@@ -8,63 +8,65 @@ class ImageEditor:
 	imageLoaded = 0
 	width = 408
 	height = 347
-	picture = ""
+	picturedata = np.array([])
+	brightness = 1
 
 	def show_image(self):
-		self.img = ImageTk.PhotoImage(self.picture)
+		tmp = Image.fromarray(np.clip((self.picturedata*self.brightness),0,255).astype(dtype=np.uint8))
+		print((self.picturedata + self.brightness).astype(dtype=np.uint8))
 		self.canvas.create_image(self.width/2,self.height/2, anchor = CENTER, image = self.img)
 
 	def negative (self):
-		if self.picture:
-			data = np.asarray(self.picture,dtype=np.uint8)
+		if self.picturedata.size:
+			data = self.picturedata
 			negativ = 255 - data
-			self.picture = Image.fromarray(negativ) 
+			self.picturedata = negativ 
 			self.show_image()
 		else:
 			self.status['text'] = "No file loaded!"
 
 	def rotateLeft (self):
-		if self.picture:
-			data = np.asarray(self.picture,dtype=np.uint8)
+		if self.picturedata.size:
+			data = self.picturedata
 			rotLeft = np.rot90(data)
-			self.picture = Image.fromarray(rotLeft) 
+			self.picturedata = rotLeft 
 			self.show_image()
 		else:
 			self.status['text'] = "No file loaded!"
 
 	def rotateRight (self):
-		if self.picture:
-			data = np.asarray(self.picture,dtype=np.uint8)
+		if self.picturedata.size:
+			data = self.picturedata
 			rotRight = np.rot90(data, axes=(1,0))
-			self.picture = Image.fromarray(rotRight) 
+			self.picturedata = rotRight 
 			self.show_image()
 		else:
 			self.status['text'] = "No file loaded!"
 
 	def flipX (self):
-		if self.picture:
-			data = np.asarray(self.picture,dtype=np.uint8)
+		if self.picturedata.size:
+			data = self.picturedata
 			flipx = np.flip(data,0)
-			self.picture = Image.fromarray(flipx) 
+			self.picturedata = flipx 
 			self.show_image()
 		else:
 			self.status['text'] = "No file loaded!"
 
 	def flipY (self):
-		if self.picture:
-			data = np.asarray(self.picture,dtype=np.uint8)
+		if self.picturedata.size:
+			data = self.picturedata
 			flipy = np.flip(data,1)
-			self.picture = Image.fromarray(flipy) 
+			self.picturedata = flipy 
 			self.show_image()
 		else:
 			self.status['text'] = "No file loaded!"
 
 	def makeGray (self):
-		if self.picture:
-			data = np.asarray(self.picture,dtype=np.uint8)
+		if self.picturedata.size:
+			data = self.picturedata
 			if data.ndim==3:
 				gray = (data * np.array([[[0.299, 0.587, 0.114]]])).sum(axis=2).astype(dtype=np.uint8)
-				self.picture = Image.fromarray(gray,"L") 
+				self.picturedata = gray 
 				self.show_image()
 			else:
 				self.status['text'] = "Image is already in gray colors!"
@@ -72,10 +74,18 @@ class ImageEditor:
 			self.status['text'] = "No file loaded!"
 
 	def brightenUp (self):
-		return
+		if self.brightness<2.5:
+			self.brightness+=0.05
+			self.show_image()
+		else:
+			self.status['text'] = "No more brigthness can be added!"
 
 	def brightenDown (self):
-		return
+		if self.brightness>0:
+			self.brightness-=0.05
+			self.show_image()
+		else:
+			self.status['text'] = "No more brigthness can be substracted!"
 
 	def contrastUp (self):
 		return
@@ -87,7 +97,7 @@ class ImageEditor:
 		fname = filedialog.askopenfilename()
 		if fname:
 			try:
-				self.picture = Image.open(fname)
+				self.picturedata =np.asarray(Image.open(fname))
 				self.show_image()
 				self.imageLoaded =1
 			except:
