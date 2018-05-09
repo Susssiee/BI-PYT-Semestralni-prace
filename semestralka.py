@@ -9,6 +9,11 @@ class ImageEditor:
 	def show_image(self):
 		factor = (259.0 * (self.contrast + 255.0)) / (255.0 * (259.0 - self.contrast))
 		tmp = Image.fromarray(np.clip((factor *(self.picturedata-128.0)+128)*self.brightness,0,255).astype(dtype=np.uint8))
+		width_org, height_org = tmp.size
+		scale_w = self.width/width_org;
+		scale_h = self.height/height_org;
+
+		tmp =tmp.resize((int(width_org*min(scale_w,scale_h)), int(height_org*min(scale_w,scale_h))), Image.ANTIALIAS)
 		self.img = ImageTk.PhotoImage(tmp)
 		self.canvas.create_image(self.width/2,self.height/2, anchor = CENTER, image = self.img)
 
@@ -113,7 +118,7 @@ class ImageEditor:
 		fname = filedialog.askopenfilename()
 		if fname:
 			try:
-				self.picturedata =np.asarray(Image.open(fname))
+				self.picturedata =np.array(Image.open(fname))
 				self.show_image()
 				self.imageLoaded =1
 				self.status['text'] = "Image loaded."
@@ -144,6 +149,8 @@ class ImageEditor:
 		if self.imageLoaded:
 			self.canvas.delete("all")
 			self.show_image()
+
+	def onMousewheel(self)
 
 	def __init__(self,master):
 		self.imageLoaded = 0
@@ -178,6 +185,7 @@ class ImageEditor:
 		self.canvas = Canvas(imageFrame, width = 300, height = 300, bg = "#404040", highlightthickness= 0, relief = FLAT)
 		self.canvas.pack(fill ="both", expand = True)
 		self.canvas.bind("<Configure>", self.canvasEvent)
+		self.canvas.bind("<MouseWheel>", self.onMousewheel)
 
 
 		#Buttons
