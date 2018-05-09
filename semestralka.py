@@ -92,6 +92,26 @@ class ImageEditor:
 			else:
 				self.status['text'] = "No more brigthness can be substracted!"
 		else:
+			self.status['text'] = "No file loaded!"	
+
+	def apply_filter(self,data):
+	    output = np.zeros(data.shape[:2])
+	    output = np.clip((
+	        -1.0*data[0:-2,0:-2] -1.0*data[0:-2,1:-1] -1.0*data[0:-2,2:] -
+	         1.0*data[1:-1,0:-2] + 9.0*data[1:-1,1:-1] - 1.0*data[1:-1,2:] -
+	         1.0*data[2:  ,0:-2] - 1.0*data[2:  ,1:-1] - 1.0*data[2:  ,2:]
+	    ),0,255).astype(dtype=np.uint8)
+	    return output		
+
+	def convolution (self):
+		if self.picturedata.size:
+			X,Y,Z = self.picturedata.shape
+			out = np.zeros([X-2, Y-2, Z])
+			for i in range(3):
+				out[:,:,i] = self.apply_filter(self.picturedata[:,:,i])
+			self.picturedata = np.clip(out,0,255).astype(dtype=np.uint8)
+			self.show_image()
+		else:
 			self.status['text'] = "No file loaded!"
 
 	def contrastUp (self):
@@ -121,7 +141,10 @@ class ImageEditor:
 				self.picturedata =np.array(Image.open(fname))
 				self.show_image()
 				self.imageLoaded =1
+				self.brightness = 1
+				self.contrast = 0
 				self.status['text'] = "Image loaded."
+
 			except:
 				self.status['text'] = "Unsupported file format"
 				self.imageLoaded = 0
@@ -210,6 +233,7 @@ class ImageEditor:
 		self.dark 	   = Button(buttonFrame, text="Darken", command = self.brightenDown, bg = "#404040", fg = "#fff3d3", activebackground = "#8fa876", relief = FLAT, highlightthickness = 0, cursor = "hand2").pack(fill = "x")
 		self.contrastM = Button(buttonFrame, text="More contrast", command = self.contrastUp, bg = "#404040", fg = "#fff3d3", activebackground = "#8fa876", relief = FLAT, highlightthickness = 0, cursor = "hand2").pack(fill = "x")
 		self.contrastL = Button(buttonFrame, text="Less contrast", command = self.contrastDown, bg = "#404040", fg = "#fff3d3", activebackground = "#8fa876", relief = FLAT, highlightthickness = 0, cursor = "hand2").pack(fill = "x")
+		self.contrastL = Button(buttonFrame, text="Apply convolution", command = self.convolution, bg = "#404040", fg = "#fff3d3", activebackground = "#8fa876", relief = FLAT, highlightthickness = 0, cursor = "hand2").pack(fill = "x")
 
 	def say_hi(self):
 		print("hello")
