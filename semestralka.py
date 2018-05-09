@@ -105,10 +105,16 @@ class ImageEditor:
 
 	def convolution (self):
 		if self.picturedata.size:
-			X,Y,Z = self.picturedata.shape
-			out = np.zeros([X-2, Y-2, Z])
-			for i in range(3):
-				out[:,:,i] = self.apply_filter(self.picturedata[:,:,i])
+			if self.picturedata.ndim==3:
+				X,Y,Z = self.picturedata.shape
+				out = np.zeros([X-2, Y-2, Z])
+				for i in range(Z):
+					out[:,:,i] = self.apply_filter(self.picturedata[:,:,i])
+			else:
+				X,Y = self.picturedata.shape
+				out = np.zeros([X-2, Y-2])
+				out[:,:] = self.apply_filter(self.picturedata[:,:])
+
 			self.picturedata = np.clip(out,0,255).astype(dtype=np.uint8)
 			self.show_image()
 		else:
@@ -138,11 +144,11 @@ class ImageEditor:
 		fname = filedialog.askopenfilename()
 		if fname:
 			try:
-				self.picturedata =np.array(Image.open(fname))
-				self.show_image()
+				self.picturedata =np.asarray(Image.open(fname),dtype=np.uint8)
 				self.imageLoaded =1
 				self.brightness = 1
 				self.contrast = 0
+				self.show_image()
 				self.status['text'] = "Image loaded."
 
 			except:
