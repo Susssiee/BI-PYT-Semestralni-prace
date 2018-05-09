@@ -5,12 +5,6 @@ import numpy as np
 
 
 class ImageEditor:
-	imageLoaded = 0
-	width = 408
-	height = 347
-	picturedata = np.array([])
-	brightness = 1
-	contrast = 0
 
 	def show_image(self):
 		factor = (259.0 * (self.contrast + 255.0)) / (255.0 * (259.0 - self.contrast))
@@ -76,32 +70,44 @@ class ImageEditor:
 			self.status['text'] = "No file loaded!"
 
 	def brightenUp (self):
-		if self.brightness<2.5:
-			self.brightness+=0.05
-			self.show_image()
+		if self.picturedata.size:
+			if self.brightness<2.5:
+				self.brightness+=0.05
+				self.show_image()
+			else:
+				self.status['text'] = "No more brigthness can be added!"
 		else:
-			self.status['text'] = "No more brigthness can be added!"
+			self.status['text'] = "No file loaded!"
 
 	def brightenDown (self):
-		if self.brightness>0:
-			self.brightness-=0.05
-			self.show_image()
+		if self.picturedata.size:
+			if self.brightness>0:
+				self.brightness-=0.05
+				self.show_image()
+			else:
+				self.status['text'] = "No more brigthness can be substracted!"
 		else:
-			self.status['text'] = "No more brigthness can be substracted!"
+			self.status['text'] = "No file loaded!"
 
 	def contrastUp (self):
-		if self.contrast<255:
-			self.contrast+=5
-			self.show_image()
+		if self.picturedata.size:
+			if self.contrast<255:
+				self.contrast+=5
+				self.show_image()
+			else:
+				self.status['text'] = "No more contrast can be added!"
 		else:
-			self.status['text'] = "No more contrast can be added!"
+			self.status['text'] = "No file loaded!"
 
 	def contrastDown (self):
-		if self.contrast>-255:
-			self.contrast-=5
-			self.show_image()
+		if self.picturedata.size:
+			if self.contrast>-255:
+				self.contrast-=5
+				self.show_image()
+			else:
+				self.status['text'] = "No more contrast can be substracted!"
 		else:
-			self.status['text'] = "No more contrast can be substracted!"
+			self.status['text'] = "No file loaded!"
 
 	def loadImage(self):
 		fname = filedialog.askopenfilename()
@@ -125,6 +131,12 @@ class ImageEditor:
 			self.show_image()
 
 	def __init__(self,master):
+		self.imageLoaded = 0
+		self.width = 408
+		self.height = 347
+		self.picturedata = np.array([])
+		self.brightness = 1
+		self.contrast = 0
 		master.title("Image Editor")
 		rootFrame 	= Frame(master, bg = "#404040")
 		imageFrame  = Frame(rootFrame, bg = "#404040")
@@ -154,16 +166,16 @@ class ImageEditor:
 
 
 		#Buttons
-		self.rotateL   = Button(buttonFrame, text="rotateL", command = self.rotateLeft, bg = "#404040", fg = "#fff3d3", activebackground = "#8fa876", relief = FLAT, highlightthickness = 0, cursor = "hand2").pack(fill = "x")
-		self.rotateR   = Button(buttonFrame, text="rotateR", command = self.rotateRight, bg = "#404040", fg = "#fff3d3", activebackground = "#8fa876", relief = FLAT, highlightthickness = 0, cursor = "hand2").pack(fill = "x")
-		self.mirrorX   = Button(buttonFrame, text="mirrorX", command = self.flipX, bg = "#404040", fg = "#fff3d3", activebackground = "#8fa876", relief = FLAT, highlightthickness = 0, cursor = "hand2").pack(fill = "x")
-		self.mirrorY   = Button(buttonFrame, text="mirrorY", command = self.flipY, bg = "#404040", fg = "#fff3d3", activebackground = "#8fa876", relief = FLAT, highlightthickness = 0, cursor = "hand2").pack(fill = "x")
-		self.inverse   = Button(buttonFrame, text="inverse", command = self.negative, bg = "#404040", fg = "#fff3d3", activebackground = "#8fa876", relief = FLAT, highlightthickness = 0, cursor = "hand2").pack(fill = "x")
-		self.gray 	   = Button(buttonFrame, text="toGray", command = self.makeGray, bg = "#404040", fg = "#fff3d3", activebackground = "#8fa876", relief = FLAT, highlightthickness = 0, cursor = "hand2").pack(fill = "x")
-		self.bright    = Button(buttonFrame, text="brigthen", command = self.brightenUp, bg = "#404040", fg = "#fff3d3", activebackground = "#8fa876", relief = FLAT, highlightthickness = 0, cursor = "hand2").pack(fill = "x")
-		self.dark 	   = Button(buttonFrame, text="darken", command = self.brightenDown, bg = "#404040", fg = "#fff3d3", activebackground = "#8fa876", relief = FLAT, highlightthickness = 0, cursor = "hand2").pack(fill = "x")
-		self.contrastM = Button(buttonFrame, text="moreContrast", command = self.contrastUp, bg = "#404040", fg = "#fff3d3", activebackground = "#8fa876", relief = FLAT, highlightthickness = 0, cursor = "hand2").pack(fill = "x")
-		self.contrastL = Button(buttonFrame, text="lessContrast", command = self.contrastDown, bg = "#404040", fg = "#fff3d3", activebackground = "#8fa876", relief = FLAT, highlightthickness = 0, cursor = "hand2").pack(fill = "x")
+		self.rotateL   = Button(buttonFrame, text="Rotate <-", command = self.rotateLeft, bg = "#404040", fg = "#fff3d3", activebackground = "#8fa876", relief = FLAT, highlightthickness = 0, cursor = "hand2").pack(fill = "x")
+		self.rotateR   = Button(buttonFrame, text="Rotate ->", command = self.rotateRight, bg = "#404040", fg = "#fff3d3", activebackground = "#8fa876", relief = FLAT, highlightthickness = 0, cursor = "hand2").pack(fill = "x")
+		self.mirrorX   = Button(buttonFrame, text="Flip X", command = self.flipX, bg = "#404040", fg = "#fff3d3", activebackground = "#8fa876", relief = FLAT, highlightthickness = 0, cursor = "hand2").pack( fill = "x")
+		self.mirrorY   = Button(buttonFrame, text="Flip Y", command = self.flipY, bg = "#404040", fg = "#fff3d3", activebackground = "#8fa876", relief = FLAT, highlightthickness = 0, cursor = "hand2").pack(fill = "x")
+		self.inverse   = Button(buttonFrame, text="Inverse colors", command = self.negative, bg = "#404040", fg = "#fff3d3", activebackground = "#8fa876", relief = FLAT, highlightthickness = 0, cursor = "hand2").pack(fill = "x")
+		self.gray 	   = Button(buttonFrame, text="Gray colors", command = self.makeGray, bg = "#404040", fg = "#fff3d3", activebackground = "#8fa876", relief = FLAT, highlightthickness = 0, cursor = "hand2").pack(fill = "x")
+		self.bright    = Button(buttonFrame, text="Brighten", command = self.brightenUp, bg = "#404040", fg = "#fff3d3", activebackground = "#8fa876", relief = FLAT, highlightthickness = 0, cursor = "hand2").pack(fill = "x")
+		self.dark 	   = Button(buttonFrame, text="Darken", command = self.brightenDown, bg = "#404040", fg = "#fff3d3", activebackground = "#8fa876", relief = FLAT, highlightthickness = 0, cursor = "hand2").pack(fill = "x")
+		self.contrastM = Button(buttonFrame, text="More contrast", command = self.contrastUp, bg = "#404040", fg = "#fff3d3", activebackground = "#8fa876", relief = FLAT, highlightthickness = 0, cursor = "hand2").pack(fill = "x")
+		self.contrastL = Button(buttonFrame, text="Less contrast", command = self.contrastDown, bg = "#404040", fg = "#fff3d3", activebackground = "#8fa876", relief = FLAT, highlightthickness = 0, cursor = "hand2").pack(fill = "x")
 
 	def say_hi(self):
 		print("hello")
