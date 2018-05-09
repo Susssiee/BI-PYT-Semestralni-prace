@@ -13,7 +13,7 @@ class ImageEditor:
 		scale_w = self.width/width_org;
 		scale_h = self.height/height_org;
 
-		tmp =tmp.resize((int(width_org*min(scale_w,scale_h)), int(height_org*min(scale_w,scale_h))), Image.ANTIALIAS)
+		tmp =tmp.resize((int(width_org*min(scale_w,scale_h)*self.zoom), int(height_org*min(scale_w,scale_h)*self.zoom)), Image.ANTIALIAS)
 		self.img = ImageTk.PhotoImage(tmp)
 		self.canvas.create_image(self.width/2,self.height/2, anchor = CENTER, image = self.img)
 
@@ -150,12 +150,22 @@ class ImageEditor:
 			self.canvas.delete("all")
 			self.show_image()
 
-	def onMousewheel(self)
+	def onMousewheel(self,event):
+		if event.num == 4:
+			if self.zoom < 1.5:
+				self.zoom+=0.05
+				self.show_image()
+		if event.num == 5:
+			if self.zoom > 0.5:
+				self.zoom-=0.05
+				self.show_image()
+		
 
 	def __init__(self,master):
 		self.imageLoaded = 0
 		self.width = 408
 		self.height = 347
+		self.zoom = 1
 		self.picturedata = np.array([])
 		self.brightness = 1
 		self.contrast = 0
@@ -185,7 +195,8 @@ class ImageEditor:
 		self.canvas = Canvas(imageFrame, width = 300, height = 300, bg = "#404040", highlightthickness= 0, relief = FLAT)
 		self.canvas.pack(fill ="both", expand = True)
 		self.canvas.bind("<Configure>", self.canvasEvent)
-		self.canvas.bind("<MouseWheel>", self.onMousewheel)
+		self.canvas.bind("<Button-4>", self.onMousewheel)
+		self.canvas.bind("<Button-5>", self.onMousewheel)
 
 
 		#Buttons
