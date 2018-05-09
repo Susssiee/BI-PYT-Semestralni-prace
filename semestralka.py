@@ -116,9 +116,24 @@ class ImageEditor:
 				self.picturedata =np.asarray(Image.open(fname))
 				self.show_image()
 				self.imageLoaded =1
+				self.status['text'] = "Image loaded."
 			except:
 				self.status['text'] = "Unsupported file format"
 				self.imageLoaded = 0
+
+	def saveImage(self):
+		if self.picturedata.size:
+			fname =  filedialog.asksaveasfilename()
+			if fname:
+				try:
+					factor = (259.0 * (self.contrast + 255.0)) / (255.0 * (259.0 - self.contrast))
+					tmp = Image.fromarray(np.clip((factor *(self.picturedata-128.0)+128)*self.brightness,0,255).astype(dtype=np.uint8))
+					tmp.save(fname)
+					self.status['text'] = "Image saved."
+				except:
+					self.status['text'] = "Oops! Something went wrong when saving the image."
+		else:
+			self.status['text'] = "No file loaded!"
 
 	def sizeEvent (self, event):
 		self.status['text'] = str(event.width) +"x"+str(event.height)
@@ -151,7 +166,7 @@ class ImageEditor:
 		menubar =Menu(root, background = "#bbbbc9", activebackground = "#adadba",relief = FLAT)
 		filemenu = Menu(menubar, tearoff=0, background = "#bbbbc9", activebackground = "#adadba",relief = FLAT)
 		filemenu.add_command(label="Load image", command=self.loadImage, background = "#bbbbc9", activebackground = "#adadba")
-		filemenu.add_command(label="Save image", command=self.say_hi, background = "#bbbbc9", activebackground = "#adadba")
+		filemenu.add_command(label="Save image", command=self.saveImage, background = "#bbbbc9", activebackground = "#adadba")
 		filemenu.add_separator()
 		filemenu.add_command(label="Quit", command=master.quit, background = "#bbbbc9", activebackground = "#adadba")
 		menubar.add_cascade(label="File", menu=filemenu, background = "#bbbbc9", activebackground = "#adadba")
